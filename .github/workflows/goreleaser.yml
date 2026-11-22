@@ -11,19 +11,30 @@ concurrency:
   group: goreleaser
   cancel-in-progress: true
 
+# The release assets are uploaded to this repository's own releases, so the
+# built-in GITHUB_TOKEN is enough — no publishing secrets needed.
+permissions:
+  contents: write
+
 jobs:
   goreleaser:
-    uses: charmbracelet/meta/.github/workflows/goreleaser.yml@main
-    secrets:
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_token: ${{ secrets.DOCKERHUB_TOKEN }}
-      gh_pat: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      goreleaser_key: ${{ secrets.GORELEASER_KEY }}
-      fury_token: ${{ secrets.FURY_TOKEN }}
-      nfpm_gpg_key: ${{ secrets.NFPM_GPG_KEY }}
-      nfpm_passphrase: ${{ secrets.NFPM_PASSPHRASE }}
-      macos_sign_p12: ${{ secrets.MACOS_SIGN_P12 }}
-      macos_sign_password: ${{ secrets.MACOS_SIGN_PASSWORD }}
-      macos_notary_issuer_id: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
-      macos_notary_key_id: ${{ secrets.MACOS_NOTARY_KEY_ID }}
-      macos_notary_key: ${{ secrets.MACOS_NOTARY_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      # goreleaser reads tags and the commit history, so it needs the full
+      # clone rather than a shallow one.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

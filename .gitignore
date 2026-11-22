@@ -1,15 +1,27 @@
-# Files
-test
-.DS_Store
+*
 
-# Binaries
-gum
-dist
-testdata
+# Project metadata and build configuration
+!/.gitignore
+!/.golangci.yml
+!/.goreleaser.yml
+!/Dockerfile
+!/LICENSE
+!/Makefile
+!/README.md
+!/VERSION
+!/go.mod
+!/go.sum
 
-# Folders
-completions/
-manpages/
-
-# nix
-result
+!/.github
+!/cmd
+!/choose
+!/completion
+!/cursor
+!/filter
+!/input
+!/internal
+!/man
+!/packaging
+!/panel
+!/style
+!/write

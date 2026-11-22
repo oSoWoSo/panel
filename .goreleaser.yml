@@ -1,21 +1,54 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
 
+# This file is intentionally self-contained: it used to `include` the upstream
+# charmbracelet/meta release config, which meant a tag push could change under
+# us and needed a dozen Charm-branded publishing secrets we never had.
+
 version: 2
 
-project_name: gum
+project_name: panel
 
-includes:
-  - from_url:
-      url: charmbracelet/meta/main/goreleaser-full.yaml
+before:
+  hooks:
+    - go mod download
 
-variables:
-  main: "."
-  scoop_name: charm-gum
-  description: "A tool for glamorous shell scripts"
-  github_url: "https://github.com/charmbracelet/gum"
-  maintainer: "Maas Lalani <maas@charm.sh>"
-  brew_commit_author_name: "Maas Lalani"
-  brew_commit_author_email: "maas@charm.sh"
+builds:
+  - id: panel
+    # The module root is not a main package; the binary lives in ./cmd/panel.
+    main: ./cmd/panel
+    binary: panel
+    env:
+      # A static binary is what the distroless Docker image needs; every
+      # dependency is pure Go, so cgo only costs portability here.
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.Version={{ .Version }}
+      - -X main.CommitSHA={{ .FullCommit }}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
 
-milestones:
-  - close: true
+archives:
+  - id: panel
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+
+snapshot:
+  # Legacy tags such as 2.0.0.001 are not SemVer; snapshots must not parse them.
+  version_template: "0.0.0-dev-{{ .ShortCommit }}"
+
+release:
+  prerelease: auto

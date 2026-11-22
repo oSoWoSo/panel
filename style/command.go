@@ -9,8 +9,8 @@ import (
 	"errors"
 	"strings"
 
-	"charm.land/gum/v2/internal/stdin"
-	"charm.land/gum/v2/internal/tty"
+	"github.com/oSoWoSo/panel/v2/internal/stdin"
+	"github.com/oSoWoSo/panel/v2/internal/tty"
 )
 
 // Run provides a shell script interface for the Lip Gloss styling.
@@ -22,7 +22,7 @@ func (o Options) Run() error {
 	} else {
 		text, _ = stdin.Read(stdin.StripANSI(o.StripANSI))
 		if text == "" {
-			return errors.New("no input provided, see `gum style --help`")
+			return errors.New("no input provided; pass style names or JSON on the command line")
 		}
 	}
 	if o.Trim {

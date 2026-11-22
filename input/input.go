@@ -4,7 +4,7 @@
 // It can be used to prompt the user for some input. The text the user entered
 // will be sent to stdout.
 //
-// $ gum input --placeholder "What's your favorite gum?" > answer.text
+// $ panel input --placeholder "What's your favorite panel?" > answer.text
 package input
 
 import (

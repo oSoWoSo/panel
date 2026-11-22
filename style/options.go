@@ -4,7 +4,7 @@ package style
 type Options struct {
 	Text      []string        `arg:"" optional:"" help:"Text to which to apply the style"`
 	Trim      bool            `help:"Trim whitespaces on every input line" default:"false"`
-	StripANSI bool            `help:"Strip ANSI sequences when reading from STDIN" default:"true" negatable:"" env:"GUM_STYLE_STRIP_ANSI"`
+	StripANSI bool            `help:"Strip ANSI sequences when reading from STDIN" default:"true" negatable:"" env:"PANEL_STYLE_STRIP_ANSI"`
 	Style     StylesNotHidden `embed:""`
 }
 
@@ -41,7 +41,7 @@ type Styles struct {
 
 // StylesNotHidden allows the style struct to display full help when not-embedded.
 //
-// NB: We must duplicate this struct to ensure that `gum style` does not hide
+// NB: We must duplicate this struct to ensure that the style loader does not hide
 // flags when an error pops up. Ideally, we can dynamically hide or show flags
 // based on the command run: https://github.com/alecthomas/kong/issues/316
 type StylesNotHidden struct {

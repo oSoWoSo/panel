@@ -1,11 +1,53 @@
 package filter
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
+	"charm.land/bubbles/v2/help"
+	"charm.land/bubbles/v2/textinput"
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 )
+
+func TestPasteRefreshesMatches(t *testing.T) {
+	for _, reverse := range []bool{false, true} {
+		for _, fuzzy := range []bool{false, true} {
+			t.Run(fmt.Sprintf("reverse=%t/fuzzy=%t", reverse, fuzzy), func(t *testing.T) {
+				input := textinput.New()
+				input.Focus()
+				choices := []string{"existing-template"}
+				v := viewport.New(viewport.WithWidth(80), viewport.WithHeight(10))
+				m := model{
+					textinput:        input,
+					viewport:         &v,
+					keymap:           defaultKeymap(),
+					filteringChoices: choices,
+					matches:          matchAll(choices),
+					limit:            1,
+					reverse:          reverse,
+					fuzzy:            fuzzy,
+				}
+				const url = "https://github.com/example/new-template"
+				updated, _ := m.Update(tea.PasteMsg{Content: url})
+				got := updated.(model)
+				if got.textinput.Value() != url {
+					t.Fatalf("input = %q, want %q", got.textinput.Value(), url)
+				}
+				if len(got.matches) != 1 || got.matches[0].Str != url {
+					t.Fatalf("matches after paste = %v, want pasted URL", got.matches)
+				}
+				updated, _ = got.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+				got = updated.(model)
+				if !got.submitted || got.matches[got.cursor].Str != url {
+					t.Fatal("Enter should submit the pasted URL without another edit")
+				}
+			})
+		}
+	}
+}
 
 func TestMatchedRanges(t *testing.T) {
 	for name, tt := range map[string]struct {
@@ -55,5 +97,46 @@ func TestByteToChar(t *testing.T) {
 	start, stop := bytePosToVisibleCharPos(str, rng)
 	if got := ansi.Strip(ansi.Cut(stStr, start, stop)); got != expect {
 		t.Errorf("expected %+q, got %+q", expect, got)
+	}
+}
+
+func TestPasteUpdatesMatches(t *testing.T) {
+	i := textinput.New()
+	i.Focus()
+	v := viewport.New(viewport.WithWidth(40), viewport.WithHeight(10))
+
+	filteringChoices := []string{"alpha", "beta", "foo-bar"}
+	m := model{
+		choices: map[string]string{
+			"alpha":   "alpha",
+			"beta":    "beta",
+			"foo-bar": "foo-bar",
+		},
+		filteringChoices: filteringChoices,
+		matches:          matchAll(filteringChoices),
+		textinput:        i,
+		viewport:         &v,
+		selected:         map[string]struct{}{},
+		limit:            1,
+		fuzzy:            true,
+		sort:             true,
+		strict:           true,
+		keymap:           defaultKeymap(),
+		help:             help.New(),
+	}
+
+	// Pasted text arrives as tea.PasteMsg; the query must be filtered just
+	// like when the same characters are typed one by one.
+	tm, _ := m.Update(tea.PasteMsg{Content: "foo"})
+	m = tm.(model)
+
+	if got := m.textinput.Value(); got != "foo" {
+		t.Errorf("textinput value = %q, want %q", got, "foo")
+	}
+	if len(m.matches) != 1 {
+		t.Fatalf("matches = %d, want 1", len(m.matches))
+	}
+	if m.matches[0].Str != "foo-bar" {
+		t.Errorf("match = %q, want %q", m.matches[0].Str, "foo-bar")
 	}
 }

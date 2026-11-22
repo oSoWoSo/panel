@@ -5,9 +5,9 @@
 // It is different from the filter command as it does not provide a fuzzy
 // finding input, so it is best used for smaller lists of options.
 //
-// Let's pick from a list of gum flavors:
+// Let's pick from a list of flavors:
 //
-// $ gum choose "Strawberry" "Banana" "Cherry"
+// $ panel -- choose "Strawberry" "Banana" "Cherry"
 package choose
 
 import (

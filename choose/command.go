@@ -11,11 +11,10 @@ import (
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/paginator"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/gum/v2/internal/exit"
-	"charm.land/gum/v2/internal/stdin"
-	"charm.land/gum/v2/internal/timeout"
-	"charm.land/gum/v2/internal/tty"
-	"charm.land/gum/v2/style"
+	"github.com/oSoWoSo/panel/v2/internal/stdin"
+	"github.com/oSoWoSo/panel/v2/internal/timeout"
+	"github.com/oSoWoSo/panel/v2/internal/tty"
+	"github.com/oSoWoSo/panel/v2/style"
 )
 
 // Run provides a shell script interface for choosing between different through
@@ -26,7 +25,7 @@ func (o Options) Run() error {
 		o.Selected = strings.Split(input, o.InputDelimiter)
 	} else if len(o.Options) == 0 {
 		if input == "" {
-			return errors.New("no options provided, see `gum choose --help`")
+			return errors.New("no options provided; choose blocks take items after their flags")
 		}
 		o.Options = strings.Split(input, o.InputDelimiter)
 	}
@@ -156,9 +155,6 @@ func (o Options) Run() error {
 	}
 	m = tm.(model)
 	if !m.submitted {
-		if o.QuietEmpty {
-			return exit.ErrExit(1) //nolint:wrapcheck
-		}
 		return errors.New("nothing selected")
 	}
 	if o.Ordered && o.Limit > 1 {

@@ -1,0 +1,27 @@
+# Template file for 'panel'
+pkgname=panel
+version=2.0.2.001
+revision=1
+build_style=go
+build_helper=qemu
+go_import_path="github.com/oSoWoSo/panel/v2"
+go_package="${go_import_path}/cmd/panel"
+go_ldflags="-X main.Version=${version}"
+short_desc="Multi-panel terminal interface for shell scripts"
+maintainer="zenobit <zen@osowoso.org>"
+license="MIT"
+homepage="https://github.com/oSoWoSo/panel"
+changelog="https://github.com/oSoWoSo/panel/releases"
+distfiles="https://github.com/oSoWoSo/panel/archive/refs/tags/${version}.tar.gz"
+checksum=31637105affe7d7f894b55cb2af3fa95a71eaa102c6efa085f40a8277b86d810
+
+post_install() {
+	vlicense LICENSE
+
+	for shell in bash fish zsh; do
+		vtargetrun ${DESTDIR}/usr/bin/panel completion $shell > panel.${shell}
+		vcompletion panel.${shell} $shell
+	done
+	vtargetrun ${DESTDIR}/usr/bin/panel man > panel.1
+	vman panel.1
+}

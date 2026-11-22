@@ -63,7 +63,7 @@ const (
 	//
 	// All directives using iota should be above this one.
 	// For internal use.
-	shellCompDirectiveMaxValue //nolint:deadcode,unused,varcheck
+	shellCompDirectiveMaxValue //nolint:unused
 
 	// ShellCompDirectiveDefault indicates to let the shell perform its default
 	// behavior after completions have been provided.
@@ -485,7 +485,7 @@ func writePostscript(buf io.StringWriter, name string) {
     local command_aliases=()
     local must_have_one_flag=()
     local must_have_one_noun=()
-    local has_completion_function=""
+    local has_completion_function="yes"
     local last_command=""
     local nouns=()
     local noun_aliases=()
@@ -580,7 +580,7 @@ func writeFlag(buf io.StringWriter, flag *kong.Flag, cmd *kong.Node) {
 	writeFlagHandler(buf, "--"+name, map[string][]string{}, cmd)
 }
 
-//nolint:deadcode,unused
+//nolint:unused
 func writeLocalNonPersistentFlag(buf io.StringWriter, flag *kong.Flag) {
 	name := flag.Name
 	format := "    local_nonpersistent_flags+=(\"--%[1]s" + cbn

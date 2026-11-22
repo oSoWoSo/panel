@@ -5,7 +5,7 @@
 // input. The text the user entered will be sent to stdout.
 // Text entry is completed with CTRL+D and aborted with CTRL+C or Escape.
 //
-// $ gum write > output.text
+// $ panel write > output.text
 package write
 
 import (
@@ -160,7 +160,7 @@ type editorFinishedMsg struct {
 
 func createTempFile(content string, lineno int) tea.Cmd {
 	return func() tea.Msg {
-		f, err := os.CreateTemp("", "gum.*.md")
+		f, err := os.CreateTemp("", "panel.*.md")
 		if err != nil {
 			return editorFinishedMsg{err: err}
 		}
@@ -192,7 +192,7 @@ func openEditor(path string, lineno int) tea.Cmd {
 		}
 	}
 	cmd, err := editor.Cmd(
-		"Gum",
+		"Panel",
 		path,
 		editor.LineNumber(lineno),
 		editor.EndOfLine(),

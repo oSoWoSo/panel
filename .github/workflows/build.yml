@@ -1,13 +1,24 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
 name: build
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
   build:
-    uses: charmbracelet/meta/.github/workflows/build.yml@main
-    secrets:
-      gh_pat: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        run: make test-all

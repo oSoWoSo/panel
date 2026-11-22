@@ -9,10 +9,10 @@ import (
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/textarea"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/gum/v2/cursor"
-	"charm.land/gum/v2/internal/stdin"
-	"charm.land/gum/v2/internal/timeout"
-	"charm.land/gum/v2/style"
+	"github.com/oSoWoSo/panel/v2/cursor"
+	"github.com/oSoWoSo/panel/v2/internal/stdin"
+	"github.com/oSoWoSo/panel/v2/internal/timeout"
+	"github.com/oSoWoSo/panel/v2/style"
 )
 
 // Run provides a shell script interface for the text area bubble.

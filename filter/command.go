@@ -11,13 +11,12 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/gum/v2/internal/exit"
-	"charm.land/gum/v2/internal/files"
-	"charm.land/gum/v2/internal/stdin"
-	"charm.land/gum/v2/internal/timeout"
-	"charm.land/gum/v2/internal/tty"
-	"charm.land/gum/v2/style"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/oSoWoSo/panel/v2/internal/files"
+	"github.com/oSoWoSo/panel/v2/internal/stdin"
+	"github.com/oSoWoSo/panel/v2/internal/timeout"
+	"github.com/oSoWoSo/panel/v2/internal/tty"
+	"github.com/oSoWoSo/panel/v2/style"
 	"github.com/sahilm/fuzzy"
 )
 
@@ -48,7 +47,7 @@ func (o Options) Run() error {
 	}
 
 	if len(o.Options) == 0 {
-		return errors.New("no options provided, see `gum filter --help`")
+		return errors.New("no options provided; filter blocks take items after their flags")
 	}
 
 	ctx, cancel := timeout.Context(o.Timeout)
@@ -151,9 +150,6 @@ func (o Options) Run() error {
 
 	m = tm.(model)
 	if !m.submitted {
-		if o.QuietEmpty {
-			return exit.ErrExit(1) //nolint:wrapcheck
-		}
 		return errors.New("nothing selected")
 	}
 
